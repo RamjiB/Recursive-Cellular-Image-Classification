@@ -15,11 +15,12 @@ from keras.optimizers import Adam,RMSprop
 
 total_train_images = 58424
 total_valid_images = 14606
-IMG_SIZE = 224
+IMG_SIZE = 299
 BATCH_SIZE = 64
 EPOCHS = 10
 
-datagen = ImageDataGenerator(rescale=1.0/255)
+datagen = ImageDataGenerator(rescale=1.0/255,horizontal_flip = True,
+vertical_flip = True)
 
 #resizing all the images to 128 x 128
 train_gen_s1 = datagen.flow_from_directory('tr_s1/' , 
@@ -44,7 +45,7 @@ def pretrained_model(model):
     if model == 'densenet':
         base_model = densenet.DenseNet121(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
     elif model == 'inception':
-        base_model = inception_v3.InceptionV3(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
+        base_model = inception_v3.InceptionV3(include_top=True,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
     elif model == 'mobilenet':
         base_model = mobilenet.MobileNet(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
     elif model == 'vgg':
@@ -57,16 +58,16 @@ def pretrained_model(model):
     for layer in base_model.layers:
         layer.trainable = False
         
-    base_model_1 = Model(inputs = base_model.input, outputs = base_model.get_layer('fc2').output)
-    base_model_2 = Model(inputs = base_model.input,outputs = base_model.get_layer('fc2').output)
+    base_model_1 = base_model.output
+    base_model_2 = base_model.output
     #x = Dense(2048,activation='relu')(x)
     #x = Dropout(0.2)(x)
-    predictions_1 = Dense(1108,activation='softmax')(base_model_1.output)
-    predictions_2 = Dense(1108,activation='softmax')(base_model_2.output)
+    predictions_1 = Dense(1108,activation='softmax')(base_model_1)
+    predictions_2 = Dense(1108,activation='softmax')(base_model_2)
 
-    return models.Model(base_model_1.input,predictions_1),models.Model(base_model_2.input,predictions_2)
+    return models.Model(base_model.input,predictions_1),models.Model(base_model.input,predictions_2)
 
-s1_model,s2_model = pretrained_model('vgg')
+s1_model,s2_model = pretrained_model('inception')
 s1_model.summary()
 s2_model.summary()
 
@@ -96,11 +97,11 @@ def train(mode):
 				workers = 16,use_multiprocessing = True,
 				max_queue_size = 20,callbacks = [c_2,cp_2,lr_2])
 
-c_1 = CSVLogger("s1_model.csv",separator = ",",append=False)
-c_2 = CSVLogger("s2_model.csv",separator = ",",append=False)
+c_1 = CSVLogger("s1_model_incep.csv",separator = ",",append=False)
+c_2 = CSVLogger("s2_model_incep.csv",separator = ",",append=False)
 
-checkpoint_fp_1 = "vgg_model_best_1.h5"
-checkpoint_fp_2 = "vgg_model_best_2.h5"
+checkpoint_fp_1 = "inc_model_best_1.h5"
+checkpoint_fp_2 = "inc_model_best_2.h5"
 cp_1 = ModelCheckpoint(checkpoint_fp_1,monitor='val_loss',
                              verbose=1,
                             save_best_only= True,mode='min')
