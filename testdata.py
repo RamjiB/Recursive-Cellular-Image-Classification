@@ -1,8 +1,6 @@
-import pandas as pd
 import numpy as np
-import glob,shutil,os,sys,tqdm
+import sys,tqdm
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 from progress.bar import Bar
 import threading
 
@@ -66,5 +64,3 @@ t8.join()
 t9.join()
 t10.join()
 print('Done')
-        
-
