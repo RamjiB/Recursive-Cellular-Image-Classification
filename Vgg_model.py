@@ -1,10 +1,7 @@
-import glob
 from keras.applications import inception_v3,mobilenet,vgg19,resnet50,xception,densenet
-import keras.backend as K
-
-from keras.models import Sequential, Model
-from keras import layers,models
-from keras import initializers
+from keras.models import Model
+from keras import models
+from keras.layers import Dense
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint,ReduceLROnPlateau,CSVLogger
 from keras.optimizers import Adam
