@@ -1,10 +1,7 @@
 from keras.applications import inception_v3,mobilenet,vgg19,resnet50,xception,densenet
-import keras.backend as K
-
-from keras.models import Sequential, Model
+from keras.models import Model
 from keras.layers import Dense
-from keras import layers,models
-from keras import initializers
+from keras import models
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint,ReduceLROnPlateau,CSVLogger
 from keras.optimizers import Adam
@@ -49,7 +46,7 @@ def pretrained_model(model):
     elif model == 'resnet':
         base_model = resnet50.ResNet50(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
     elif model == 'xception':
-        base_model = xception.Xception(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3)) 
+        base_model = xception.Xception(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
     for layer in base_model.layers:
         layer.trainable = False
     base_model_1 = base_model.output
