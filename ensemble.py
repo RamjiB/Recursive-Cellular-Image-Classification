@@ -1,10 +1,7 @@
 from keras.applications import inception_v3,mobilenet,vgg19,resnet50,xception,densenet
-import keras.backend as K
-
-from keras.models import Sequential, Model
+from keras.models import Model
 from keras.layers import Dense
-from keras import layers,models
-from keras import initializers
+from keras import models
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint,ReduceLROnPlateau,CSVLogger
 from keras.optimizers import Adam
@@ -26,13 +23,13 @@ train_gen_s1 = datagen.flow_from_directory('tr_s1/' ,
 train_gen_s2 = datagen.flow_from_directory('tr_s2/',target_size = (IMG_SIZE,IMG_SIZE),
 						batch_size=BATCH_SIZE,class_mode = 'categorical',
 						shuffle = True)
-valid_gen_s1 = datagen.flow_from_directory('va_s1/' , 
-                                        target_size =(IMG_SIZE,IMG_SIZE) , 
+valid_gen_s1 = datagen.flow_from_directory('va_s1/' ,
+                                        target_size =(IMG_SIZE,IMG_SIZE) ,
                                         batch_size = BATCH_SIZE,
                                        class_mode ='categorical',
                                        shuffle = True)
-valid_gen_s2 = datagen.flow_from_directory('va_s2/' , 
-                                        target_size =(IMG_SIZE,IMG_SIZE) , 
+valid_gen_s2 = datagen.flow_from_directory('va_s2/' ,
+                                        target_size =(IMG_SIZE,IMG_SIZE) ,
                                         batch_size = BATCH_SIZE,
                                        class_mode ='categorical',
                                        shuffle = True)
@@ -49,10 +46,8 @@ def pretrained_model(model):
         base_model = resnet50.ResNet50(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
     elif model == 'xception':
         base_model = xception.Xception(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
-        
     for layer in base_model.layers:
         layer.trainable = False
-        
     base_model_1 = Model(inputs = base_model.input, outputs = base_model.get_layer('fc2').output)
     base_model_2 = Model(inputs = base_model.input,outputs = base_model.get_layer('fc2').output)
     #x = Dense(2048,activation='relu')(x)
@@ -70,7 +65,7 @@ steps_p_ep_va = (total_valid_images//2)//BATCH_SIZE
 
 def train(mode):
 	if mode == 's1':
-		s1_model.compile(optimizer = Adam(lr=0.0001), 
+		s1_model.compile(optimizer = Adam(lr=0.0001),
               		loss = 'categorical_crossentropy', metrics=['accuracy'])
 		s1_model.fit_generator(train_gen_s1,
 				steps_per_epoch = steps_p_ep_tr,
@@ -81,7 +76,7 @@ def train(mode):
 				workers = 16,use_multiprocessing = True,
 				max_queue_size = 20,callbacks=[c_1,cp_1,lr_1])
 	else:
-		s2_model.compile(optimizer = Adam(lr=0.0001), 
+		s2_model.compile(optimizer = Adam(lr=0.0001),
               		loss = 'categorical_crossentropy', metrics=['accuracy'])
 		s2_model.fit_generator(train_gen_s2,
 				steps_per_epoch = steps_p_ep_tr,
@@ -117,5 +112,4 @@ lr_2 = ReduceLROnPlateau(monitor='loss',
 train('s1')
 print('S1 done')
 train('s2')
-
 print('Done')
