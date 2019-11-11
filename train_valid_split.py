@@ -1,6 +1,5 @@
-import pandas as pd
 import numpy as np
-import glob,shutil,os,sys,tqdm
+import os,sys,tqdm
 from progress.bar import Bar
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -39,7 +38,7 @@ def moving_files(df=x_train_df,mode='train'):
     for i in tqdm.tqdm(range(len(df))):
         row = df.iloc[i,:]
         class_name = str(int(row['sirna']))
-        create_folder(f'{mode}_data/{class_name}')
+        create_folder(mode +'_data/'+class_name)
         img = rio.load_site_as_rgb('train',
                                 row['experiment'],
                                 row['plate'],
