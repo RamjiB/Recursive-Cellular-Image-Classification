@@ -1,6 +1,4 @@
-import glob
 import os
-import numpy as np
 import threading
 from progress.bar import Bar
 import shutil
@@ -10,7 +8,7 @@ def create_folder(folderName):
 		try:
 			os.makedirs(folderName)
 		except OSError as exc:
-			if exc.errno != errno.EEXIST:
+			if exc.errno != exc.errno.EEXIST:
 				raise
 
 def move(path,thread,mode):
@@ -24,11 +22,11 @@ def move(path,thread,mode):
 			f = f.split('_')[3]
 			src = os.path.join(path,folder,file)
 			if f == '1':
-				create_folder(mode+'_s1/'+folder) 
+				create_folder(mode+'_s1/'+folder)
 				dest = mode+'_s1/'+folder+'/'+file
 				shutil.move(src,dest)
 			elif f =='2':
-				create_folder(mode+'_s2/'+folder) 
+				create_folder(mode+'_s2/'+folder)
 				dest = mode+'_s2/'+folder+'/'+file
 				shutil.move(src,dest)
 		bar.next()
@@ -40,6 +38,3 @@ t2.start()
 t1.join()
 t2.join()
 print('Done')
-
-
-
