@@ -59,7 +59,6 @@ def pretrained_model(model):
 s1_model,s2_model = pretrained_model('inception')
 s1_model.summary()
 s2_model.summary()
-
 steps_p_ep_tr = (total_train_images//2)//BATCH_SIZE
 steps_p_ep_va = (total_valid_images//2)//BATCH_SIZE
 
@@ -107,9 +106,7 @@ lr_2 = ReduceLROnPlateau(monitor='loss',
                                  verbose = 1,
                                  mode = 'min')
 
-
 train('s1')
 print('S1 done')
 train('s2')
-
 print('Done')
