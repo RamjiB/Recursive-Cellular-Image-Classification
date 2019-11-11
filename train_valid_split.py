@@ -28,7 +28,6 @@ def create_folder(folderName):
         except OSError as exc:
             if exc.errno != errno.EEXIST:
                 raise
-
 create_folder('train_data')
 create_folder('valid_data')
 
