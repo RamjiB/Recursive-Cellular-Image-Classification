@@ -69,7 +69,7 @@ steps_p_ep_va = (total_valid_images//2)//BATCH_SIZE
 
 def train(mode):
 	if mode == 's1':
-		s1_model.compile(optimizer = Adam(lr=0.0001), 
+		s1_model.compile(optimizer = Adam(lr=0.0001),
               		loss = 'categorical_crossentropy', metrics=['accuracy'])
 		s1_model.fit_generator(train_gen_s1,
 				steps_per_epoch = steps_p_ep_tr,
@@ -80,7 +80,7 @@ def train(mode):
 				workers = 16,use_multiprocessing = True,
 				max_queue_size = 20,callbacks=[c_1,cp_1,lr_1])
 	else:
-		s2_model.compile(optimizer = Adam(lr=0.0001), 
+		s2_model.compile(optimizer = Adam(lr=0.0001),
               		loss = 'categorical_crossentropy', metrics=['accuracy'])
 		s2_model.fit_generator(train_gen_s2,
 				steps_per_epoch = steps_p_ep_tr,
