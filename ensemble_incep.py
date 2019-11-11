@@ -1,17 +1,13 @@
-import glob
-import threading
-
-import keras
-from keras.applications import inception_v3,nasnet,mobilenet,vgg19,resnet50,xception,densenet
+from keras.applications import inception_v3,mobilenet,vgg19,resnet50,xception,densenet
 import keras.backend as K
 
 from keras.models import Sequential, Model
-from keras.layers import Conv2D,MaxPool2D,SeparableConv2D,Dropout,Flatten,Dense,BatchNormalization,GlobalAveragePooling2D
+from keras.layers import Dense
 from keras import layers,models
 from keras import initializers
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint,ReduceLROnPlateau,CSVLogger
-from keras.optimizers import Adam,RMSprop
+from keras.optimizers import Adam
 
 total_train_images = 58424
 total_valid_images = 14606
@@ -23,21 +19,21 @@ datagen = ImageDataGenerator(rescale=1.0/255,horizontal_flip = True,
 vertical_flip = True)
 
 #resizing all the images to 128 x 128
-train_gen_s1 = datagen.flow_from_directory('tr_s1/' , 
-                                        target_size = (IMG_SIZE,IMG_SIZE) , 
+train_gen_s1 = datagen.flow_from_directory('tr_s1/' ,
+                                        target_size = (IMG_SIZE,IMG_SIZE) ,
                                         batch_size = BATCH_SIZE,
                                        class_mode ='categorical',
                                        shuffle = True)
 train_gen_s2 = datagen.flow_from_directory('tr_s2/',target_size = (IMG_SIZE,IMG_SIZE),
 						batch_size=BATCH_SIZE,class_mode = 'categorical',
 						shuffle = True)
-valid_gen_s1 = datagen.flow_from_directory('va_s1/' , 
-                                        target_size =(IMG_SIZE,IMG_SIZE) , 
+valid_gen_s1 = datagen.flow_from_directory('va_s1/' ,
+                                        target_size =(IMG_SIZE,IMG_SIZE) ,
                                         batch_size = BATCH_SIZE,
                                        class_mode ='categorical',
                                        shuffle = True)
-valid_gen_s2 = datagen.flow_from_directory('va_s2/' , 
-                                        target_size =(IMG_SIZE,IMG_SIZE) , 
+valid_gen_s2 = datagen.flow_from_directory('va_s2/' ,
+                                        target_size =(IMG_SIZE,IMG_SIZE) ,
                                         batch_size = BATCH_SIZE,
                                        class_mode ='categorical',
                                        shuffle = True)
@@ -53,18 +49,15 @@ def pretrained_model(model):
     elif model == 'resnet':
         base_model = resnet50.ResNet50(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
     elif model == 'xception':
-        base_model = xception.Xception(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3))
-        
+        base_model = xception.Xception(include_top=False,weights='imagenet',input_shape = (IMG_SIZE,IMG_SIZE,3)) 
     for layer in base_model.layers:
         layer.trainable = False
-        
     base_model_1 = base_model.output
     base_model_2 = base_model.output
     #x = Dense(2048,activation='relu')(x)
     #x = Dropout(0.2)(x)
     predictions_1 = Dense(1108,activation='softmax')(base_model_1)
     predictions_2 = Dense(1108,activation='softmax')(base_model_2)
-
     return models.Model(base_model.input,predictions_1),models.Model(base_model.input,predictions_2)
 
 s1_model,s2_model = pretrained_model('inception')
@@ -99,7 +92,6 @@ def train(mode):
 
 c_1 = CSVLogger("s1_model_incep.csv",separator = ",",append=False)
 c_2 = CSVLogger("s2_model_incep.csv",separator = ",",append=False)
-
 checkpoint_fp_1 = "inc_model_best_1.h5"
 checkpoint_fp_2 = "inc_model_best_2.h5"
 cp_1 = ModelCheckpoint(checkpoint_fp_1,monitor='val_loss',
