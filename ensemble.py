@@ -1,17 +1,13 @@
-import glob
-import threading
-
-import keras
-from keras.applications import inception_v3,nasnet,mobilenet,vgg19,resnet50,xception,densenet
+from keras.applications import inception_v3,mobilenet,vgg19,resnet50,xception,densenet
 import keras.backend as K
 
 from keras.models import Sequential, Model
-from keras.layers import Conv2D,MaxPool2D,SeparableConv2D,Dropout,Flatten,Dense,BatchNormalization,GlobalAveragePooling2D
+from keras.layers import Dense
 from keras import layers,models
 from keras import initializers
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint,ReduceLROnPlateau,CSVLogger
-from keras.optimizers import Adam,RMSprop
+from keras.optimizers import Adam
 
 total_train_images = 58424
 total_valid_images = 14606
@@ -22,8 +18,8 @@ EPOCHS = 10
 datagen = ImageDataGenerator(rescale=1.0/255)
 
 #resizing all the images to 128 x 128
-train_gen_s1 = datagen.flow_from_directory('tr_s1/' , 
-                                        target_size = (IMG_SIZE,IMG_SIZE) , 
+train_gen_s1 = datagen.flow_from_directory('tr_s1/' ,
+                                        target_size = (IMG_SIZE,IMG_SIZE) ,
                                         batch_size = BATCH_SIZE,
                                        class_mode ='categorical',
                                        shuffle = True)
@@ -63,7 +59,6 @@ def pretrained_model(model):
     #x = Dropout(0.2)(x)
     predictions_1 = Dense(1108,activation='softmax')(base_model_1.output)
     predictions_2 = Dense(1108,activation='softmax')(base_model_2.output)
-
     return models.Model(base_model_1.input,predictions_1),models.Model(base_model_2.input,predictions_2)
 
 s1_model,s2_model = pretrained_model('vgg')
